@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  webapp:
+    build: ./webapp
+    container_name: smart-garden-web
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:3001
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    container_name: smart-garden-api
+    ports:
+      - "3001:3001"
+    environment:
+      - DB_HOST=${EXTERNAL_DB_HOST}          # Your existing PostgreSQL host
+      - DB_PORT=${EXTERNAL_DB_PORT}          # Typically 5432
+      - DB_USER=${EXTERNAL_DB_USER}
+      - DB_PASSWORD=${EXTERNAL_DB_PASSWORD}
+      - DB_NAME=${EXTERNAL_DB_NAME}
+      - MQTT_HOST=${EXTERNAL_MQTT_HOST}      # Your existing EMQX host
+      - MQTT_PORT=${EXTERNAL_MQTT_PORT}      # Typically 1883 or 8883
+      - MQTT_USERNAME=${EXTERNAL_MQTT_USER}
+      - MQTT_PASSWORD=${EXTERNAL_MQTT_PASS}
+    restart: unless-stopped
